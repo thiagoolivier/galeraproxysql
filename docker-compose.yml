@@ -1,0 +1,54 @@
+services:
+
+ #mariadb1
+ mariadb1:
+   image: mariadb:10.5
+   container_name: mariadb1
+   ports:
+    - "3306:3306"
+   env_file: .env
+   environment:
+    - MARIADB_USER=${MARIADB_USER_1}
+    - MARIADB_PASSWORD=${MARIADB_PASSWORD_1}
+    - MARIADB_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD}
+   volumes:
+    - ./mariadb1/galera.cnf:/etc/mysql/mariadb.conf.d/galera.cnf
+   cap_add:
+    - all
+   networks:
+    - mariadb
+
+ #mariadb2
+ mariadb2:
+   image: mariadb:10.5
+   container_name: mariadb2
+   ports:
+    - "3307:3306"
+   env_file: .env   
+   environment:
+    - MARIADB_USER=${MARIADB_USER_2}
+    - MARIADB_PASSWORD=${MARIADB_PASSWORD_2}
+    - MARIADB_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD}
+   volumes:
+    - ./mariadb2/galera.cnf:/etc/mysql/mariadb.conf.d/galera.cnf
+   cap_add:
+    - all
+   networks:
+    - mariadb
+
+ #proxysql
+ proxysql: 
+   image: proxysql/proxysql:2.6.3-debian
+   container_name: proxysqlgalera
+   ports:
+    - "6032:6032"
+    - "6070:6070"
+    - "6080:6080"
+   cap_add:
+    - all
+   networks:
+    - mariadb
+
+networks:
+  mariadb:
+     driver: bridge
